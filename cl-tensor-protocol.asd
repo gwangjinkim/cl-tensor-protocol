@@ -14,7 +14,7 @@
      (:file "tensor")
      (:file "registry")
      (:file "util")
-     (:file "capabilities")
+     (:file "capability")
      (:file "protocol")))))
 
 (asdf:defsystem "cl-tensor-protocol/test"
@@ -25,6 +25,7 @@
     :components
     ((:file "package")
      (:file "suite")
-     (:file "protocol-tests"))))
+     (:file "protocol-tests")
+     (:file "capability-tests"))))
   :perform (test-op (o c)
              (uiop:symbol-call :fiveam :run! :cl-tensor-protocol/test)))

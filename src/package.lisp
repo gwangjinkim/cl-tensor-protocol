@@ -8,6 +8,8 @@
    ;; Classes
    #:backend #:tensor
    ;; Conditions
-   #:error #:shape-error #:dtype-error #:backend-error #:not-implemented))
+   #:error #:shape-error #:dtype-error #:backend-error #:not-implemented
+   ;; Capabilities API
+   #:capabilities #:supports? #:missing-capabilities #:require-capabilities))
 
 (in-package #:cl-tensor-protocol)
