@@ -1,0 +1,17 @@
+#!/usr/bin/env ros
+;; -*- mode: lisp; -*-
+;; scripts/repl.ros — load system and drop to REPL helpers
+
+(require :asdf)
+
+(let* ((root (uiop:getcwd))
+       (asd  (merge-pathnames "cl-tensor-protocol.asd" root)))
+  (asdf:load-asd asd))
+
+;; Load main system
+(asdf:load-system :cl-tensor-protocol)
+
+(format t "~&cl-tensor-protocol loaded.~%")
+(format t "Try: (asdf:test-system :cl-tensor-protocol/test)~%")
+
+;; stay interactive from here on - end of file

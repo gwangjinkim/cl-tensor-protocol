@@ -1,0 +1,18 @@
+#!/usr/bin/env ros
+;; -*- mode: lisp; -*-
+;; scripts/test.ros — deterministic test runner (run from repo root)
+
+(require :asdf)
+
+(let* ((root (uiop:getcwd))
+       (asd  (merge-pathnames "cl-tensor-protocol.asd" root)))
+  (asdf:load-asd asd))
+
+(handler-case
+    (progn
+      (asdf:test-system :cl-tensor-protocol/test)
+      (format t "~&OK~%")
+      (uiop:quit 0))
+  (error (e)
+    (format *error-output* "~&TESTS FAILED: ~a~%" e)
+    (uiop:quit 1)))
