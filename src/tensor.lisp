@@ -16,3 +16,9 @@
 (defgeneric shape (tensor)
   (:documentation "Return the tensor shape as a simple-vector of dims."))
 
+;; Derived helpers for rank/size (used by tests in later milestones)
+(defun rank (x)
+  (length (shape x)))
+
+(defun size (x)
+  (reduce #'* (coerce (shape x) 'list) :initial-value 1))

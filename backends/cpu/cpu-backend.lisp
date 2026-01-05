@@ -9,7 +9,7 @@
 
 ;; For M3, declare at least :mm capability (per acceptance)
 (defmethod cl-tensor-protocol:capabilities ((bk cpu-backend))
-  '(:mm))
+  '(:tensor-from :to-array :shape :mm))
 
 (defparameter *cpu-backend-instance* (make-instance 'cpu-backend))
 
@@ -19,4 +19,3 @@
 ;; Register on load
 (eval-when (:load-toplevel :execute)
   (ensure-cpu-registered))
-

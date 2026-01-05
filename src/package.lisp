@@ -14,6 +14,9 @@
    ;; Registry
    #:register-backend #:available-backends #:find-backend #:default-backend
    ;; Base accessors
-   #:backend-name #:device-type #:features))
+   #:backend-name #:device-type #:features
+   ;; Tensor introspection + creation/conversion
+   #:backend-of #:dtype #:shape #:rank #:size
+   #:tensor #:to-array))
 
 (in-package #:cl-tensor-protocol)
