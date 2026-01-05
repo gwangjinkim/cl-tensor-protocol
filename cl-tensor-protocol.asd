@@ -27,6 +27,7 @@
      (:file "suite")
      (:file "protocol-tests")
      (:file "capability-tests")
+     (:file "docs")
      (:file "conformance")
      (:file "cpu-backend"))))
   :perform (test-op (o c)
