@@ -186,3 +186,19 @@
          (tb (ctp:tensor bk b :dtype :int32)))
     (is (handler-case (progn (ctp:mm ta tb) nil)
           (ctp:shape-error () t)))))
+
+;;; Tier D (M7 requires conformance to run only if declared)
+
+(test m7-copy-and-as-dtype
+  (let* ((bk (ctp:default-backend))
+         (a (let ((x (make-array '(2 2))))
+              (setf (aref x 0 0) 1 (aref x 0 1) 2
+                    (aref x 1 0) 3 (aref x 1 1) 4)
+              x))
+         (t1 (ctp:tensor bk a :dtype :int32))
+         (t2 (ctp:copy t1))
+         (t3 (ctp:as-dtype t1 :float64)))
+    (is (equalp (ctp:shape t1) (ctp:shape t2)))
+    (is (not (eq (ctp:to-array t1) (ctp:to-array t2))))
+    (is (eql :float64 (ctp:dtype t3)))
+    (is (equalp (ctp:to-array t1) (ctp:to-array (ctp:as-dtype t3 :int32))))))

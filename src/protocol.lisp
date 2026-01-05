@@ -10,6 +10,13 @@ OBJECT is a scalar or CL array; DTYPE is a keyword; ORDER may be :c/:f/:auto."))
 (defgeneric to-array (tensor &key copy element-type)
   (:documentation "Return a CL array or scalar view/copy of TENSOR."))
 
+;; Dtype ops (Tier D)
+(defgeneric copy (tensor)
+  (:documentation "Return a deep copy of TENSOR (same backend, dtype, shape)."))
+
+(defgeneric as-dtype (tensor dtype)
+  (:documentation "Return a TENSOR converted or reinterpreted as DTYPE."))
+
 ;; Shape ops (M5)
 (defgeneric reshape (tensor new-shape &key copy)
   (:documentation "Return TENSOR reshaped to NEW-SHAPE (simple-vector)."))

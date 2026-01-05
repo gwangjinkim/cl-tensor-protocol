@@ -18,6 +18,8 @@
    ;; Tensor introspection + creation/conversion
    #:backend-of #:dtype #:shape #:rank #:size
    #:tensor #:to-array
+   ;; Tier D dtype ops
+   #:copy #:as-dtype
    ;; Shape ops
    #:reshape #:transpose #:slice
    ;; Math ops

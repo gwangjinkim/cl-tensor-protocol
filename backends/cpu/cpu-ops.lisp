@@ -94,3 +94,36 @@
                        :dtype (cl-tensor-protocol:dtype a)
                        :shape (vector m n)
                        :data C)))))
+
+;; Tier D: copy / as-dtype
+(defmethod cl-tensor-protocol:copy ((x cpu-tensor))
+  (let* ((arr (cl-tensor-protocol:to-array x :copy t))
+         (sh (cl-tensor-protocol:shape x)))
+    (make-instance 'cpu-tensor
+                   :backend (cl-tensor-protocol:backend-of x)
+                   :dtype (cl-tensor-protocol:dtype x)
+                   :shape sh
+                   :data arr)))
+
+(defun %coerce-number (n dtype)
+  (ecase dtype
+    (:int32 (truncate n))
+    (:float64 (coerce n 'double-float))
+    (:float32 (coerce n 'single-float))
+    (t n)))
+
+(defmethod cl-tensor-protocol:as-dtype ((x cpu-tensor) dtype)
+  (let* ((arr (cl-tensor-protocol:to-array x :copy t))
+         (sh (cl-tensor-protocol:shape x))
+         (out (if (arrayp arr)
+                  (let ((o (make-array (array-dimensions arr))))
+                    (loop for i below (array-total-size arr) do
+                          (setf (row-major-aref o i)
+                                (%coerce-number (row-major-aref arr i) dtype)))
+                    o)
+                  (%coerce-number arr dtype))))
+    (make-instance 'cpu-tensor
+                   :backend (cl-tensor-protocol:backend-of x)
+                   :dtype dtype
+                   :shape sh
+                   :data out)))

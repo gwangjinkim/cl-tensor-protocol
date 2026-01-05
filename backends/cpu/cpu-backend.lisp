@@ -9,7 +9,7 @@
 
 ;; For M3, declare at least :mm capability (per acceptance)
 (defmethod cl-tensor-protocol:capabilities ((bk cpu-backend))
-  '(:tensor-from :to-array :shape :reshape :transpose :slice :add :mul :mm))
+  '(:tensor-from :to-array :shape :reshape :transpose :slice :add :mul :mm :copy :as-dtype))
 
 (defparameter *cpu-backend-instance* (make-instance 'cpu-backend))
 
