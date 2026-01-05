@@ -19,3 +19,13 @@ OBJECT is a scalar or CL array; DTYPE is a keyword; ORDER may be :c/:f/:auto."))
 
 (defgeneric slice (tensor spec)
   (:documentation "Return a view/slice according to SPEC per 4.6 spec."))
+
+;; Math ops (M6)
+(defgeneric add (x y)
+  (:documentation "Elementwise addition. Supports tensor⊗tensor (same backend), tensor⊗scalar, scalar⊗tensor."))
+
+(defgeneric mul (x y)
+  (:documentation "Elementwise multiplication. Supports tensor⊗tensor (same backend), tensor⊗scalar, scalar⊗tensor."))
+
+(defgeneric mm (a b)
+  (:documentation "Matrix multiply for rank-2 tensors on same backend."))

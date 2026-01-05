@@ -23,6 +23,8 @@
   (declare (ignore order))
   (let* ((shape (%compute-shape object))
          (data (%coerce-dtype object dtype)))
+    ;; If object is already a CL array, ensure our :data is a CL array;
+    ;; if it's a number, keep as number. No conversion here.
     (make-instance 'cpu-tensor
                    :backend bk
                    :dtype (or dtype (if (arrayp object) :float64 :int32))
@@ -32,11 +34,17 @@
 (defmethod cl-tensor-protocol:to-array ((x cpu-tensor) &key copy element-type)
   (declare (ignore element-type))
   (let ((data (data x)))
-    (if copy
-        (if (arrayp data)
-            (copy-seq data)
-            data)
-        data)))
+    (cond
+      (copy
+       (if (arrayp data)
+           (let* ((dims (array-dimensions data))
+                  (out (make-array dims)))
+             (loop for i below (array-total-size data) do
+                   (setf (row-major-aref out i)
+                         (row-major-aref data i)))
+             out)
+           data))
+      (t data))))
 
 ;;; M5 shape ops
 

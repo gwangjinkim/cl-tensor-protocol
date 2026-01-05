@@ -19,6 +19,8 @@
    #:backend-of #:dtype #:shape #:rank #:size
    #:tensor #:to-array
    ;; Shape ops
-   #:reshape #:transpose #:slice))
+   #:reshape #:transpose #:slice
+   ;; Math ops
+   #:add #:mul #:mm))
 
 (in-package #:cl-tensor-protocol)

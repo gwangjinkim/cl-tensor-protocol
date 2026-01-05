@@ -8,11 +8,37 @@
        (asd  (merge-pathnames "cl-tensor-protocol.asd" root)))
   (asdf:load-asd asd))
 
-(handler-case
-    (progn
-      (asdf:test-system :cl-tensor-protocol/test)
-      (format t "~&OK~%")
-      (uiop:quit 0))
-  (error (e)
-    (format *error-output* "~&TESTS FAILED: ~a~%" e)
-    (uiop:quit 1)))
+(flet ((load-file-rel (rel)
+         (load (merge-pathnames rel (uiop:getcwd)))))
+  (handler-case
+      (progn
+        ;; Load protocol sources directly, in defined order
+        (load-file-rel #P"src/package.lisp")
+        (load-file-rel #P"src/conditions.lisp")
+        (load-file-rel #P"src/dtype.lisp")
+        (load-file-rel #P"src/backend.lisp")
+        (load-file-rel #P"src/tensor.lisp")
+        (load-file-rel #P"src/util.lisp")
+        (load-file-rel #P"src/capability.lisp")
+        (load-file-rel #P"src/registry.lisp")
+        (load-file-rel #P"src/protocol.lisp")
+        ;; Load CPU backend sources directly
+        (load-file-rel #P"backends/cpu/package.lisp")
+        (load-file-rel #P"backends/cpu/cpu-backend.lisp")
+        (load-file-rel #P"backends/cpu/cpu-tensor.lisp")
+        (load-file-rel #P"backends/cpu/cpu-ops.lisp")
+        ;; Ensure FiveAM is available without compiling
+        (asdf:operate 'asdf:load-source-op :fiveam)
+        ;; Load tests directly
+        (load-file-rel #P"test/package.lisp")
+        (load-file-rel #P"test/suite.lisp")
+        (load-file-rel #P"test/protocol-tests.lisp")
+        (load-file-rel #P"test/capability-tests.lisp")
+        (load-file-rel #P"test/cpu-backend.lisp")
+        ;; Run tests
+        (uiop:symbol-call :fiveam :run! :cl-tensor-protocol/test)
+        (format t "~&OK~%")
+        (uiop:quit 0))
+    (error (e)
+      (format *error-output* "~&TESTS FAILED: ~a~%" e)
+      (uiop:quit 1))))

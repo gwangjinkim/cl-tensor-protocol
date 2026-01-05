@@ -15,8 +15,7 @@
      (:file "registry")
      (:file "util")
      (:file "capability")
-     (:file "protocol"))))
-  :in-order-to ((test-op (load-op "cl-tensor-backend-cpu"))))
+     (:file "protocol")))))
 
 (asdf:defsystem "cl-tensor-protocol/test"
   :depends-on ("cl-tensor-protocol" "cl-tensor-backend-cpu" "fiveam")

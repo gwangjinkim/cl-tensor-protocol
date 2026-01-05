@@ -2,7 +2,7 @@
 
 (in-package #:cl-tensor-protocol)
 
-(define-condition error (condition)
+(define-condition error (cl:error)
   ()
   (:documentation "Base protocol error (do not use CL:ERROR directly)."))
 
@@ -28,4 +28,3 @@
                      (not-implemented-missing-capabilities c)
                      (not-implemented-context c))))
   (:documentation "Signaled when a requested operation/capability is not implemented by a backend."))
-

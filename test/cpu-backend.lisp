@@ -118,3 +118,71 @@
          (tx (ctp:tensor bk a :dtype :int32)))
     (is (handler-case (progn (ctp:slice tx '((:all))) nil)
           (ctp:shape-error () t)))))
+
+;;; M6 — CPU math ops: add/mul/mm
+
+(test m6-add-scalar-and-tensor
+  (let* ((bk (ctp:default-backend))
+         (a (make-array '(2 2) :initial-contents '((1 2) (3 4))))
+         (tx (ctp:tensor bk a :dtype :int32))
+         (rz (ctp:add tx 1))
+         (lz (ctp:add 1 tx)))
+    (is (equalp #(2 2) (ctp:shape rz)))
+    (is (equalp (make-array '(2 2) :initial-contents '((2 3) (4 5))) (ctp:to-array rz)))
+    (is (equalp (ctp:to-array rz) (ctp:to-array lz)))))
+
+(test m6-add-tensor-tensor
+  (let* ((bk (ctp:default-backend))
+         (a (make-array '(2 2) :initial-contents '((1 2) (3 4))))
+         (b (make-array '(2 2) :initial-contents '((10 20) (30 40))))
+         (ta (ctp:tensor bk a :dtype :int32))
+         (tb (ctp:tensor bk b :dtype :int32))
+         (tc (ctp:add ta tb)))
+    (is (equalp #(2 2) (ctp:shape tc)))
+    (is (equalp (make-array '(2 2) :initial-contents '((11 22) (33 44))) (ctp:to-array tc)))))
+
+(test m6-add-mismatch
+  (let* ((bk (ctp:default-backend))
+         (a (make-array '(2 2) :initial-contents '((1 2) (3 4))))
+         (b (make-array '(2 3) :initial-contents '((1 2 3) (4 5 6))))
+         (ta (ctp:tensor bk a :dtype :int32))
+         (tb (ctp:tensor bk b :dtype :int32)))
+    (is (handler-case (progn (ctp:add ta tb) nil)
+          (ctp:shape-error () t)))))
+
+(test m6-mul-scalar-and-tensor
+  (let* ((bk (ctp:default-backend))
+         (a (make-array '(2 2) :initial-contents '((1 2) (3 4))))
+         (tx (ctp:tensor bk a :dtype :int32))
+         (rz (ctp:mul tx 2))
+         (lz (ctp:mul 2 tx)))
+    (is (equalp #(2 2) (ctp:shape rz)))
+    (is (equalp (make-array '(2 2) :initial-contents '((2 4) (6 8))) (ctp:to-array rz)))
+    (is (equalp (ctp:to-array rz) (ctp:to-array lz)))))
+
+(test m6-mm-correctness
+  (let* ((bk (ctp:default-backend))
+         (a (let ((x (make-array '(2 3))))
+              (setf (aref x 0 0) 1 (aref x 0 1) 2 (aref x 0 2) 3
+                    (aref x 1 0) 4 (aref x 1 1) 5 (aref x 1 2) 6)
+              x))
+         (b (let ((x (make-array '(3 2))))
+              (setf (aref x 0 0) 7 (aref x 0 1) 8
+                    (aref x 1 0) 9 (aref x 1 1) 10
+                    (aref x 2 0) 11 (aref x 2 1) 12)
+              x))
+         (ta (ctp:tensor bk a :dtype :int32))
+         (tb (ctp:tensor bk b :dtype :int32))
+         ;; Force arrays to ensure cpu-tensor paths; these are already arrays.
+         (tc (ctp:mm ta tb)))
+    (is (equalp #(2 2) (ctp:shape tc)))
+    (is (equalp (make-array '(2 2) :initial-contents '((58 64) (139 154))) (ctp:to-array tc)))))
+
+(test m6-mm-mismatch
+  (let* ((bk (ctp:default-backend))
+         (a (make-array '(2 3)))
+         (b (make-array '(4 2)))
+         (ta (ctp:tensor bk a :dtype :int32))
+         (tb (ctp:tensor bk b :dtype :int32)))
+    (is (handler-case (progn (ctp:mm ta tb) nil)
+          (ctp:shape-error () t)))))
