@@ -8,6 +8,11 @@
   ((:module "src"
     :components
     ((:file "package")
+     (:file "conditions")
+     (:file "dtype")
+     (:file "backend")
+     (:file "tensor")
+     (:file "registry")
      (:file "util")
      (:file "capabilities")
      (:file "protocol")))))

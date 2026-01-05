@@ -2,8 +2,12 @@
 
 (defpackage #:cl-tensor-protocol
   (:use #:cl)
+  (:shadow #:error)
   (:nicknames #:ctp)
-  (:export))
+  (:export
+   ;; Classes
+   #:backend #:tensor
+   ;; Conditions
+   #:error #:shape-error #:dtype-error #:backend-error #:not-implemented))
 
 (in-package #:cl-tensor-protocol)
-
