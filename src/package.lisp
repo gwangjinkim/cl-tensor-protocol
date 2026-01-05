@@ -17,6 +17,8 @@
    #:backend-name #:device-type #:features
    ;; Tensor introspection + creation/conversion
    #:backend-of #:dtype #:shape #:rank #:size
-   #:tensor #:to-array))
+   #:tensor #:to-array
+   ;; Shape ops
+   #:reshape #:transpose #:slice))
 
 (in-package #:cl-tensor-protocol)
