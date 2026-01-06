@@ -36,9 +36,12 @@
         (load-file-rel #P"test/capability-tests.lisp")
         (load-file-rel #P"test/cpu-backend.lisp")
         ;; Run tests
-        (uiop:symbol-call :fiveam :run! :cl-tensor-protocol/test)
-        (format t "~&OK~%")
-        (uiop:quit 0))
+        (let ((results (uiop:symbol-call :fiveam :run! :cl-tensor-protocol/test)))
+          ;; Many FiveAM setups return a results object; be conservative:
+          (when (search "Fail:" (with-output-to-string (s) (uiop:symbol-call :fiveam :explain! results)))
+            (uiop:quit 1))
+          (format t "~&OK~%")
+          (uiop:quit 0))
     (error (e)
       (format *error-output* "~&TESTS FAILED: ~a~%" e)
       (uiop:quit 1))))
