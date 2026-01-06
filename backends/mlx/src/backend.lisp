@@ -13,7 +13,7 @@
 (defmethod ctp:backend-name ((bk mlx-backend)) "mlx")
 
 (defmethod ctp:capabilities ((bk mlx-backend))
-  '(:tensor-from :to-array :shape))
+  '(:tensor-from :to-array :shape :add :mul :mm))
 
 (defun register-mlx-backend ()
   (when (mlx-available-p)
@@ -21,4 +21,3 @@
 
 (eval-when (:load-toplevel :execute)
   (register-mlx-backend))
-

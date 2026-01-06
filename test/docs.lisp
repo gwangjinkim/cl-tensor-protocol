@@ -28,3 +28,15 @@
               (and (search ":add" s) (search ":mul" s))))))
   t)
 
+;;; M9–M11 doc: backend-mlx page exists and mentions key details
+
+(test m9-m11-backend-mlx-docs
+  (let* ((p #P"docs/backend-mlx.md"))
+    (is (probe-file p))
+    (let ((s (%read-file p)))
+      (is (search "cl-tensor-backend-mlx" s))
+      (is (search "mlx-cl" s))
+      (is (or (search ":mm" s) (search "mm" s)))
+      (is (search ":add" s))
+      (is (search ":mul" s))
+      (is (search "capabilities" s)))))
