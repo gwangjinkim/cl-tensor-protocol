@@ -72,6 +72,14 @@ Partial backends can participate truthfully by declaring only implemented caps.
 - mlx-cl: `docs/adapter-mlx-cl.md` (wraps `mlx-cl`; do NOT `:use :mlx-cl`; use local-nicknames; start with Tier A, then `:mm`, then `:add/:mul`, then shape ops.)
 - cl-cuda: `docs/adapter-cl-cuda.md` (uses `cl-cuda`; start with Tier A, then `:add/:mul`, then `:mm`; consider cuBLAS as an optional add-on.)
 
+## MLX backend (local system)
+
+This repo ships an optional MLX backend in `backends/mlx/` (depends on `mlx-cl`). It auto-registers if `mlx-cl` is available.
+
+- Load: `(asdf:load-system :cl-tensor-backend-mlx)`
+- Tests: `(asdf:test-system :cl-tensor-backend-mlx/test)` (or `make test` to run all)
+- Select MLX by preference: `(ctp:default-backend :prefer '(:mlx :cpu))`
+
 ## Status (v0.1 Definition of Done)
 
 - CPU backend passes tiers A–D
@@ -79,4 +87,3 @@ Partial backends can participate truthfully by declaring only implemented caps.
 - Tiered conformance supports partial backends (fake :mm-only backend included in tests)
 - Adapter template docs exist
 - Roswell workflow is stable (`make test` is canonical)
-
