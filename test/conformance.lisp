@@ -27,34 +27,34 @@ declared, corresponding checks must pass."
            (check-cap :tensor-from
              (lambda ()
                (let* ((a (make-array '(1 1)))
-                      (t (ctp:tensor backend a :dtype :int32)))
-                 (assert-equal #(1 1) (ctp:shape t)))))
+                      (tx (ctp:tensor backend a :dtype :int32)))
+                 (assert-equal #(1 1) (ctp:shape tx)))))
            (check-cap :to-array
              (lambda ()
                (let* ((a (make-array '(1 1)))
-                      (t (ctp:tensor backend a :dtype :int32)))
-                 (assert-equal a (ctp:to-array t)))))
+                      (tx (ctp:tensor backend a :dtype :int32)))
+                 (assert-equal a (ctp:to-array tx)))))
            (check-cap :shape
              (lambda ()
                (let* ((a (make-array '(2 3)))
-                      (t (ctp:tensor backend a :dtype :int32)))
-                 (assert-equal #(2 3) (ctp:shape t))))))
+                      (tx (ctp:tensor backend a :dtype :int32)))
+                 (assert-equal #(2 3) (ctp:shape tx))))))
           (:B
            (check-cap :reshape
              (lambda ()
                (let* ((a (make-array '(2 3)))
-                      (t (ctp:tensor backend a :dtype :int32)))
-                 (assert-equal #(3 2) (ctp:shape (ctp:reshape t #(3 2)))))))
+                      (tx (ctp:tensor backend a :dtype :int32)))
+                 (assert-equal #(3 2) (ctp:shape (ctp:reshape tx #(3 2)))))))
            (check-cap :transpose
              (lambda ()
                (let* ((a (make-array '(2 3)))
-                      (t (ctp:tensor backend a :dtype :int32)))
-                 (assert-equal #(3 2) (ctp:shape (ctp:transpose t #(1 0)))))))
+                      (tx (ctp:tensor backend a :dtype :int32)))
+                 (assert-equal #(3 2) (ctp:shape (ctp:transpose tx #(1 0)))))))
            (check-cap :slice
              (lambda ()
                (let* ((a (make-array '(2 3)))
-                      (t (ctp:tensor backend a :dtype :int32))
-                      (sl (ctp:slice t '((:range 0 1 1) (:range 0 1 1)))))
+                      (tx (ctp:tensor backend a :dtype :int32))
+                      (sl (ctp:slice tx '((:range 0 1 1) (:range 0 1 1)))))
                  (assert-equal #(1 1) (ctp:shape sl))))))
           (:C
            (check-cap :add
@@ -147,14 +147,14 @@ declared, corresponding checks must pass."
            (k2 (aref sb 0))
            (n (aref sb 1)))
       (unless (= k k2) (error 'ctp:shape-error))
-      (let* ((A (ctp:to-array a))
-             (B (ctp:to-array b))
+      (let* ((arr-a (ctp:to-array a))
+             (arr-b (ctp:to-array b))
              (C (make-array (list m n))))
         (dotimes (i m)
           (dotimes (j n)
             (let ((sum 0))
               (dotimes (p k)
-                (incf sum (* (aref A i p) (aref B p j))))
+                (incf sum (* (aref arr-a i p) (aref arr-b p j))))
               (setf (aref C i j) sum))))
         (make-instance 'fake-mm-tensor
                        :backend (ctp:backend-of a)
@@ -173,4 +173,3 @@ declared, corresponding checks must pass."
 (test m7-conformance-fake-mm
   (let ((bk (make-instance 'fake-mm-backend)))
     (is (eq t (run-conformance bk :tiers '(:A :B :C :D))))))
-

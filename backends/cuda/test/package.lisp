@@ -11,6 +11,8 @@
 (defun cuda-available-p ()
   (ignore-errors (and (find-package :cl-cuda) t)))
 
+(defmacro skip (reason)
+  `(progn (format t "~&[skip] ~a~%" ,reason) t))
+
 (defun run-tests ()
   (run! :cl-tensor-backend-cuda/test))
-

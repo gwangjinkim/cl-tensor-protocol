@@ -29,19 +29,51 @@
         (load-file-rel #P"backends/cpu/cpu-ops.lisp")
         ;; Ensure FiveAM is available without compiling
         (asdf:operate 'asdf:load-source-op :fiveam)
-        ;; Load tests directly
+        ;; Load core tests directly
         (load-file-rel #P"test/package.lisp")
         (load-file-rel #P"test/suite.lisp")
         (load-file-rel #P"test/protocol-tests.lisp")
         (load-file-rel #P"test/capability-tests.lisp")
         (load-file-rel #P"test/cpu-backend.lisp")
-        ;; Run tests
-        (let ((results (uiop:symbol-call :fiveam :run! :cl-tensor-protocol/test)))
-          ;; Many FiveAM setups return a results object; be conservative:
-          (when (search "Fail:" (with-output-to-string (s) (uiop:symbol-call :fiveam :explain! results)))
-            (uiop:quit 1))
-          (format t "~&OK~%")
-          (uiop:quit 0))
+        ;; Load additional tests
+        (load-file-rel #P"test/docs.lisp")
+        (load-file-rel #P"test/conformance.lisp")
+        (load-file-rel #P"backends/mlx/test/package.lisp")
+        (load-file-rel #P"backends/mlx/test/smoke.lisp")
+        (load-file-rel #P"backends/cuda/test/package.lisp")
+        (load-file-rel #P"backends/cuda/test/smoke.lisp")
+
+        ;; Optionally load MLX backend sources if MLX is present
+        (when (find-package :mlx-cl)
+          (ignore-errors
+            (load-file-rel #P"backends/mlx/src/package.lisp")
+            (load-file-rel #P"backends/mlx/src/backend.lisp")
+            (load-file-rel #P"backends/mlx/src/tensor.lisp")
+            (load-file-rel #P"backends/mlx/src/ops.lisp")))
+
+        ;; Run all suites with robust failure detection
+        (labels ((ci-search (needle hay)
+                   (search (string-upcase needle) (string-upcase hay)))
+                 (run-suite (name)
+                   (let* ((res nil)
+                          (out (with-output-to-string (s)
+                                 (let ((*standard-output* s))
+                                   (setf res (uiop:symbol-call :fiveam :run! name)))))
+                          (status-sym (find-symbol "RESULTS-STATUS" :fiveam))
+                          (failed (or (and status-sym (fboundp status-sym)
+                                            (let ((st (funcall status-sym res)))
+                                              (not (member st '(:success :pass :passed :ok)))))
+                                       (ci-search "[FAIL]" out)
+                                       (ci-search "failed" out))))
+                     (when failed
+                       (format *error-output* "~&TESTS FAILED in ~a~%~a~%" name out)
+                       (uiop:quit 1)))) )
+          (run-suite :cl-tensor-protocol/test)
+          (run-suite :cl-tensor-backend-mlx/test)
+          (run-suite :cl-tensor-backend-cuda/test))
+
+        (format t "~&OK~%")
+        (uiop:quit 0))
     (error (e)
       (format *error-output* "~&TESTS FAILED: ~a~%" e)
       (uiop:quit 1))))

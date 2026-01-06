@@ -11,6 +11,8 @@
 (defun mlx-available-p ()
   (ignore-errors (and (find-package :mlx-cl) t)))
 
+(defmacro skip (reason)
+  `(progn (format t "~&[skip] ~a~%" ,reason) t))
+
 (defun run-tests ()
   (run! :cl-tensor-backend-mlx/test))
-
